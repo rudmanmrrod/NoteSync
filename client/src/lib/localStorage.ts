@@ -60,7 +60,8 @@ export class LocalStorageManager {
   // App state management
   getAppState(): Partial<AppState> {
     try {
-      const stateJson = window.localStorage.getItem(APP_STATE_KEY);
+      if (!browserStorage) return {};
+      const stateJson = browserStorage.getItem(APP_STATE_KEY);
       return stateJson ? JSON.parse(stateJson) : {};
     } catch (error) {
       console.error('Error reading app state from localStorage:', error);
@@ -70,9 +71,10 @@ export class LocalStorageManager {
 
   saveAppState(state: Partial<AppState>): void {
     try {
+      if (!browserStorage) return;
       const currentState = this.getAppState();
       const newState = { ...currentState, ...state };
-      window.localStorage.setItem(APP_STATE_KEY, JSON.stringify(newState));
+      browserStorage.setItem(APP_STATE_KEY, JSON.stringify(newState));
     } catch (error) {
       console.error('Error saving app state to localStorage:', error);
     }
@@ -150,8 +152,9 @@ export class LocalStorageManager {
   }
 
   clearAll(): void {
-    window.localStorage.removeItem(NOTES_KEY);
-    window.localStorage.removeItem(APP_STATE_KEY);
+    if (!browserStorage) return;
+    browserStorage.removeItem(NOTES_KEY);
+    browserStorage.removeItem(APP_STATE_KEY);
   }
 }
 

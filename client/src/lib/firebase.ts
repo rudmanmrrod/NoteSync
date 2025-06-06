@@ -3,29 +3,48 @@ import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, q
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import type { LocalNote } from "@shared/schema";
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "notemaster"}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "notemaster"}.firebasestorage.app`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-};
+// Check if Firebase is properly configured
+const hasFirebaseConfig = !!(
+  import.meta.env.VITE_FIREBASE_API_KEY &&
+  import.meta.env.VITE_FIREBASE_PROJECT_ID &&
+  import.meta.env.VITE_FIREBASE_APP_ID
+);
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+let app: any = null;
+let db: any = null;
+let auth: any = null;
+
+if (hasFirebaseConfig) {
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  };
+
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+}
 
 // Initialize anonymous authentication
 let isAuthReady = false;
 let currentUser: any = null;
 
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  isAuthReady = true;
-});
+if (hasFirebaseConfig && auth) {
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    isAuthReady = true;
+  });
+}
 
 // Ensure user is authenticated
 async function ensureAuth() {
+  if (!hasFirebaseConfig || !auth) {
+    throw new Error('Firebase not configured');
+  }
+  
   if (!isAuthReady) {
     await new Promise(resolve => {
       const unsubscribe = onAuthStateChanged(auth, () => {
@@ -67,11 +86,11 @@ export class FirebaseSync {
   }
 
   async isAvailable(): Promise<boolean> {
-    if (!this.isOnline) return false;
+    if (!this.isOnline || !hasFirebaseConfig) return false;
     
     try {
       await ensureAuth();
-      return !!currentUser && !!import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      return !!currentUser;
     } catch (error) {
       console.error('Firebase not available:', error);
       return false;
