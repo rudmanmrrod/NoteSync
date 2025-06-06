@@ -3,11 +3,15 @@ import type { LocalNote, AppState } from "@shared/schema";
 const NOTES_KEY = 'notemaster_notes';
 const APP_STATE_KEY = 'notemaster_app_state';
 
-export class LocalStorage {
+// Access browser localStorage directly
+const browserStorage = typeof window !== 'undefined' ? window.localStorage : null;
+
+export class LocalStorageManager {
   // Notes management
   getNotes(): LocalNote[] {
     try {
-      const notesJson = localStorage.getItem(NOTES_KEY);
+      if (!browserStorage) return [];
+      const notesJson = browserStorage.getItem(NOTES_KEY);
       return notesJson ? JSON.parse(notesJson) : [];
     } catch (error) {
       console.error('Error reading notes from localStorage:', error);
@@ -17,7 +21,8 @@ export class LocalStorage {
 
   saveNotes(notes: LocalNote[]): void {
     try {
-      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+      if (!browserStorage) return;
+      browserStorage.setItem(NOTES_KEY, JSON.stringify(notes));
     } catch (error) {
       console.error('Error saving notes to localStorage:', error);
     }
@@ -55,7 +60,7 @@ export class LocalStorage {
   // App state management
   getAppState(): Partial<AppState> {
     try {
-      const stateJson = localStorage.getItem(APP_STATE_KEY);
+      const stateJson = window.localStorage.getItem(APP_STATE_KEY);
       return stateJson ? JSON.parse(stateJson) : {};
     } catch (error) {
       console.error('Error reading app state from localStorage:', error);
@@ -67,7 +72,7 @@ export class LocalStorage {
     try {
       const currentState = this.getAppState();
       const newState = { ...currentState, ...state };
-      localStorage.setItem(APP_STATE_KEY, JSON.stringify(newState));
+      window.localStorage.setItem(APP_STATE_KEY, JSON.stringify(newState));
     } catch (error) {
       console.error('Error saving app state to localStorage:', error);
     }
@@ -145,9 +150,9 @@ export class LocalStorage {
   }
 
   clearAll(): void {
-    localStorage.removeItem(NOTES_KEY);
-    localStorage.removeItem(APP_STATE_KEY);
+    window.localStorage.removeItem(NOTES_KEY);
+    window.localStorage.removeItem(APP_STATE_KEY);
   }
 }
 
-export const localStorage = new LocalStorage();
+export const localStorage = new LocalStorageManager();
