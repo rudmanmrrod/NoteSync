@@ -373,13 +373,13 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
       <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 flex-1">
-            <span className="text-sm text-slate-500">Tags:</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Tags:</span>
             <div className="flex items-center space-x-2 flex-wrap">
               {note.tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className={`text-sm px-2 py-1 bg-${getTagColor(tag)}-100 text-${getTagColor(tag)}-700 group cursor-pointer`}
+                  className={`text-sm px-2 py-1 bg-${getTagColor(tag)}-100 dark:bg-${getTagColor(tag)}-900/30 text-${getTagColor(tag)}-700 dark:text-${getTagColor(tag)}-300 group cursor-pointer`}
                   onClick={() => handleRemoveTag(tag)}
                 >
                   {tag}
@@ -404,7 +404,7 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
                     }}
                     onBlur={handleAddTag}
                     placeholder="Add tag..."
-                    className="h-7 w-24 text-sm"
+                    className="h-7 w-24 text-sm bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-slate-100"
                   />
                 </div>
               ) : (
@@ -412,7 +412,7 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowTagInput(true)}
-                  className="h-7 w-7 p-0 text-slate-400 hover:text-slate-600"
+                  className="h-7 w-7 p-0 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
                 >
                   <Plus className="h-3 w-3" />
                 </Button>
@@ -420,12 +420,8 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
             </div>
           </div>
           
-          <div className="flex items-center space-x-4 text-sm text-slate-500">
+          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
             <span>{getCharacterCount(content)} characters</span>
-            <Button variant="ghost" size="sm" className="text-sm">
-              <Download className="h-3 w-3 mr-1" />
-              Export
-            </Button>
           </div>
         </div>
       </div>
