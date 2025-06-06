@@ -128,9 +128,9 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div className="flex-1 flex flex-col bg-white dark:bg-slate-900">
       {/* Editor Header */}
-      <div className="px-6 py-4 border-b border-slate-200">
+      <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between">
           <div className="flex-1 mr-4">
             <Input
@@ -138,7 +138,7 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Untitled Note"
-              className="text-2xl font-semibold border-none bg-transparent p-0 focus:ring-0 shadow-none"
+              className="text-2xl font-semibold border-none bg-transparent p-0 focus:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
             />
           </div>
           <div className="flex items-center space-x-2">

@@ -77,18 +77,18 @@ export function NotesList({
   };
 
   return (
-    <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+    <div className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col">
       {/* Search Header */}
-      <div className="p-4 border-b border-slate-200">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="relative">
           <Input
             type="text"
             placeholder="Search notes..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-slate-100"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
         </div>
 
         {/* Filter and Sort */}

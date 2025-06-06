@@ -155,10 +155,10 @@ export function Sidebar({
       </div>
 
       {/* New Note Button */}
-      <div className="p-4 border-b border-slate-200">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <Button 
           onClick={onCreateNote}
-          className="w-full bg-primary text-white hover:bg-blue-700"
+          className="w-full bg-primary text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
         >
           <PlusCircle className="h-4 w-4 mr-2" />
           New Note
@@ -249,10 +249,10 @@ export function Sidebar({
       </ScrollArea>
 
       {/* Settings */}
-      <div className="p-4 border-t border-slate-200">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700">
         <Button
           variant="ghost"
-          className="w-full justify-start"
+          className="w-full justify-start text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
           onClick={onOpenSettings}
         >
           <Settings className="h-4 w-4 mr-3" />
