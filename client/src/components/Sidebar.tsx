@@ -13,8 +13,11 @@ import {
   CheckCircle, 
   RefreshCw,
   Menu,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '@/lib/theme';
 import type { LocalNote, AppState } from '@shared/schema';
 
 interface SidebarProps {
@@ -43,6 +46,7 @@ export function Sidebar({
   tags
 }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { theme, setTheme, actualTheme } = useTheme();
 
   const allNotesCount = notes.filter(n => !n.isDeleted && !n.isArchived).length;
   const favoriteCount = notes.filter(n => !n.isDeleted && n.isFavorite).length;
@@ -94,20 +98,42 @@ export function Sidebar({
     }
   };
 
+  const toggleTheme = () => {
+    if (actualTheme === 'light') {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+  };
+
   return (
-    <div className={`${appState.sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-60'} bg-white border-r border-slate-200 flex flex-col transition-all duration-300`}>
+    <div className={`${appState.sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-60'} bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-all duration-300`}>
       {/* Header */}
-      <div className="p-4 border-b border-slate-200">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-900">NoteMaster</h1>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onToggleSidebar}
-            className="lg:hidden"
-          >
-            {appState.sidebarCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
-          </Button>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">NoteMaster</h1>
+          <div className="flex items-center space-x-1">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={toggleTheme}
+              className="h-8 w-8 p-0"
+            >
+              {actualTheme === 'light' ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={onToggleSidebar}
+              className="lg:hidden h-8 w-8 p-0"
+            >
+              {appState.sidebarCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
         
         {/* Sync Status */}

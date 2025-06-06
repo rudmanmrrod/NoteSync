@@ -86,15 +86,8 @@ export class FirebaseSync {
   }
 
   async isAvailable(): Promise<boolean> {
-    if (!this.isOnline || !hasFirebaseConfig) return false;
-    
-    try {
-      await ensureAuth();
-      return !!currentUser;
-    } catch (error) {
-      console.error('Firebase not available:', error);
-      return false;
-    }
+    // Disable Firebase sync for offline mode
+    return false;
   }
 
   async syncToFirebase(notes: LocalNote[]): Promise<boolean> {

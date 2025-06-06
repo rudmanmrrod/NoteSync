@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { useTheme } from '@/lib/theme';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ interface SettingsModalProps {
 
 export function SettingsModal({ isOpen, onClose, syncStatus }: SettingsModalProps) {
   const [autoSync, setAutoSync] = useState(true);
-  const [theme, setTheme] = useState('light');
+  const { theme, setTheme } = useTheme();
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
 
   // Check if Firebase is configured
