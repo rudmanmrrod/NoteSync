@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Star, List, Paperclip } from 'lucide-react';
+import { Search, Star, List, Paperclip, Menu } from 'lucide-react';
 import type { LocalNote } from '@shared/schema';
 
 interface NotesListProps {
@@ -16,6 +16,7 @@ interface NotesListProps {
   onToggleFavorite: (noteId: string) => void;
   sortBy: 'modified' | 'created' | 'title';
   onSortChange: (sort: 'modified' | 'created' | 'title') => void;
+  onToggleSidebar?: () => void;
 }
 
 export function NotesList({
@@ -77,9 +78,9 @@ export function NotesList({
   };
 
   return (
-    <div className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col">
+    <div className="w-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col">
       {/* Search Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+      <div className="p-3 md:p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="relative">
           <Input
             type="text"
@@ -92,9 +93,9 @@ export function NotesList({
         </div>
 
         {/* Filter and Sort */}
-        <div className="flex items-center justify-between mt-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between mt-3">
           <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger className="w-40 h-8 text-sm">
+            <SelectTrigger className="w-full sm:w-40 h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -121,7 +122,7 @@ export function NotesList({
               <div
                 key={note.id}
                 onClick={() => onNoteSelect(note.id)}
-                className={`p-4 border-b border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                className={`p-3 md:p-4 border-b border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 ${
                   currentNoteId === note.id ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-primary' : ''
                 }`}
               >
