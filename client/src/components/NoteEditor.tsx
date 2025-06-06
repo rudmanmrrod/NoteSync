@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   Bold, 
   Italic, 
@@ -22,9 +23,12 @@ import {
   Share,
   MoreHorizontal,
   Download,
+  Upload,
   Plus,
   X,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  FileJson
 } from 'lucide-react';
 import type { LocalNote } from '@shared/schema';
 
@@ -115,6 +119,88 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
     return colors[index];
   };
 
+  const handleExportJSON = () => {
+    if (!note) return;
+    
+    const exportData = {
+      title: note.title,
+      content: note.content,
+      tags: note.tags,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt
+    };
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    downloadFile(dataBlob, `${note.title || 'note'}.json`);
+  };
+
+  const handleExportText = () => {
+    if (!note) return;
+    
+    const textContent = `${note.title}\n\n${note.content}\n\nTags: ${note.tags.join(', ')}\nCreated: ${formatDate(note.createdAt)}\nModified: ${formatDate(note.updatedAt)}`;
+    const dataBlob = new Blob([textContent], { type: 'text/plain' });
+    downloadFile(dataBlob, `${note.title || 'note'}.txt`);
+  };
+
+  const handleExportMarkdown = () => {
+    if (!note) return;
+    
+    const markdownContent = `# ${note.title}\n\n${note.content}\n\n---\n\n**Tags:** ${note.tags.map(tag => `\`${tag}\``).join(', ')}\n\n**Created:** ${formatDate(note.createdAt)}  \n**Modified:** ${formatDate(note.updatedAt)}`;
+    const dataBlob = new Blob([markdownContent], { type: 'text/markdown' });
+    downloadFile(dataBlob, `${note.title || 'note'}.md`);
+  };
+
+  const downloadFile = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.txt,.md';
+    
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file || !note) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          
+          if (file.type === 'application/json' || file.name.endsWith('.json')) {
+            const importedData = JSON.parse(content);
+            onUpdateNote(note.id, {
+              title: importedData.title || note.title,
+              content: importedData.content || content,
+              tags: importedData.tags || note.tags
+            });
+          } else {
+            // For .txt and .md files, import as content
+            onUpdateNote(note.id, {
+              content: content
+            });
+          }
+        } catch (error) {
+          console.error('Error importing file:', error);
+          // Handle error silently for better UX
+        }
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    input.click();
+  };
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center bg-white">
@@ -163,9 +249,30 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
                 </>
               )}
             </div>
-            <Button variant="ghost" size="sm">
-              <Share className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={handleImport}>
+              <Upload className="h-4 w-4" />
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportJSON}>
+                  <FileJson className="h-4 w-4 mr-2" />
+                  Export as JSON
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportMarkdown}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export as Markdown
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportText}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export as Text
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" size="sm">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -183,7 +290,7 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
       </div>
 
       {/* Rich Text Editor Toolbar */}
-      <div className="px-6 py-3 border-b border-slate-200 bg-slate-50">
+      <div className="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
         <div className="flex items-center space-x-1">
           {/* Formatting buttons */}
           <div className="flex items-center space-x-1 mr-3">
@@ -258,12 +365,12 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
           value={content}
           onChange={(e) => handleContentChange(e.target.value)}
           placeholder="Start writing your note..."
-          className="min-h-full border-none bg-transparent resize-none focus:ring-0 shadow-none text-base leading-relaxed"
+          className="min-h-full border-none bg-transparent resize-none focus:ring-0 shadow-none text-base leading-relaxed text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
         />
       </div>
 
       {/* Editor Footer with Tags */}
-      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+      <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 flex-1">
             <span className="text-sm text-slate-500">Tags:</span>

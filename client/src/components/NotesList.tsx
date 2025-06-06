@@ -112,7 +112,7 @@ export function NotesList({
       {/* Notes List */}
       <ScrollArea className="flex-1">
         {sortedNotes.length === 0 ? (
-          <div className="p-4 text-center text-slate-500">
+          <div className="p-4 text-center text-slate-500 dark:text-slate-400">
             {searchQuery ? 'No notes found' : 'No notes yet'}
           </div>
         ) : (
@@ -121,12 +121,12 @@ export function NotesList({
               <div
                 key={note.id}
                 onClick={() => onNoteSelect(note.id)}
-                className={`p-4 border-b border-slate-200 cursor-pointer hover:bg-slate-50 ${
-                  currentNoteId === note.id ? 'bg-blue-50 border-l-4 border-l-primary' : ''
+                className={`p-4 border-b border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                  currentNoteId === note.id ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-primary' : ''
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-medium text-slate-900 line-clamp-1 flex-1 mr-2">
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100 line-clamp-1 flex-1 mr-2">
                     {note.title || 'Untitled Note'}
                   </h3>
                   <Button
@@ -148,11 +148,11 @@ export function NotesList({
                   </Button>
                 </div>
                 
-                <p className="text-sm text-slate-600 line-clamp-2 mb-2">
+                <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 mb-2">
                   {generatePreview(note.content) || 'No content'}
                 </p>
                 
-                <div className="flex items-center justify-between text-xs text-slate-500">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <span>{formatDate(note.updatedAt)}</span>
                   <div className="flex items-center space-x-2">
                     {note.tags.length > 0 && (
@@ -161,18 +161,18 @@ export function NotesList({
                           <Badge
                             key={tag}
                             variant="secondary"
-                            className={`text-xs px-2 py-1 bg-${getTagColor(tag)}-100 text-${getTagColor(tag)}-700`}
+                            className={`text-xs px-2 py-1 bg-${getTagColor(tag)}-100 dark:bg-${getTagColor(tag)}-900/30 text-${getTagColor(tag)}-700 dark:text-${getTagColor(tag)}-300`}
                           >
                             {tag}
                           </Badge>
                         ))}
                         {note.tags.length > 2 && (
-                          <span className="text-slate-400">+{note.tags.length - 2}</span>
+                          <span className="text-slate-400 dark:text-slate-500">+{note.tags.length - 2}</span>
                         )}
                       </div>
                     )}
                     {note.content.includes('<img') && (
-                      <Paperclip className="h-3 w-3" title="Has attachments" />
+                      <Paperclip className="h-3 w-3" />
                     )}
                   </div>
                 </div>
