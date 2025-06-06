@@ -107,7 +107,7 @@ export function Sidebar({
   };
 
   return (
-    <div className={`${appState.sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-60'} bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-all duration-300`}>
+    <div className="w-60 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col h-full lg:transition-all lg:duration-300">
       {/* Header */}
       <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between">

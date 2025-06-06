@@ -216,35 +216,56 @@ export default function Home() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
-      <Sidebar
-        notes={appState.notes}
-        appState={appState}
-        onCreateNote={handleCreateNote}
-        onFilterChange={handleFilterChange}
-        onTagSelect={handleTagSelect}
-        onManualSync={handleManualSync}
-        onOpenSettings={handleOpenSettings}
-        onToggleSidebar={handleToggleSidebar}
-        activeFilter={activeFilter}
-        tags={allTags}
-      />
+      {/* Mobile overlay for sidebar */}
+      {!appState.sidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={handleToggleSidebar}
+        />
+      )}
 
-      <NotesList
-        notes={filteredNotes}
-        currentNoteId={appState.currentNoteId}
-        searchQuery={appState.searchQuery}
-        onSearchChange={handleSearchChange}
-        onNoteSelect={handleNoteSelect}
-        onToggleFavorite={handleToggleFavorite}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-      />
+      {/* Sidebar */}
+      <div className={`${appState.sidebarCollapsed ? 'hidden' : 'fixed lg:relative'} inset-y-0 left-0 z-50 lg:z-auto`}>
+        <Sidebar
+          notes={appState.notes}
+          appState={appState}
+          onCreateNote={handleCreateNote}
+          onFilterChange={handleFilterChange}
+          onTagSelect={handleTagSelect}
+          onManualSync={handleManualSync}
+          onOpenSettings={handleOpenSettings}
+          onToggleSidebar={handleToggleSidebar}
+          activeFilter={activeFilter}
+          tags={allTags}
+        />
+      </div>
 
-      <NoteEditor
-        note={currentNote}
-        onUpdateNote={handleUpdateNote}
-        autoSaveStatus={appState.autoSaveStatus}
-      />
+      {/* Mobile-first layout for notes list and editor */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Notes List - Hidden on mobile when note is selected */}
+        <div className={`${appState.currentNoteId ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-shrink-0`}>
+          <NotesList
+            notes={filteredNotes}
+            currentNoteId={appState.currentNoteId}
+            searchQuery={appState.searchQuery}
+            onSearchChange={handleSearchChange}
+            onNoteSelect={handleNoteSelect}
+            onToggleFavorite={handleToggleFavorite}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+          />
+        </div>
+
+        {/* Note Editor - Full width on mobile when note is selected */}
+        <div className={`${appState.currentNoteId ? 'flex' : 'hidden md:flex'} flex-1`}>
+          <NoteEditor
+            note={currentNote}
+            onUpdateNote={handleUpdateNote}
+            autoSaveStatus={appState.autoSaveStatus}
+            onBack={() => setAppState(prev => ({ ...prev, currentNoteId: null }))}
+          />
+        </div>
+      </div>
 
       <SettingsModal
         isOpen={appState.isSettingsOpen}

@@ -28,7 +28,8 @@ import {
   X,
   CheckCircle,
   FileText,
-  FileJson
+  FileJson,
+  ArrowLeft
 } from 'lucide-react';
 import type { LocalNote } from '@shared/schema';
 
@@ -36,9 +37,10 @@ interface NoteEditorProps {
   note: LocalNote | null;
   onUpdateNote: (noteId: string, updates: Partial<LocalNote>) => void;
   autoSaveStatus: 'saved' | 'saving' | 'modified';
+  onBack?: () => void;
 }
 
-export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorProps) {
+export function NoteEditor({ note, onUpdateNote, autoSaveStatus, onBack }: NoteEditorProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [newTag, setNewTag] = useState('');
@@ -216,15 +218,26 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
   return (
     <div className="flex-1 flex flex-col bg-white dark:bg-slate-900">
       {/* Editor Header */}
-      <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+      <div className="px-4 md:px-6 py-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between">
-          <div className="flex-1 mr-4">
+          <div className="flex items-center flex-1 mr-4">
+            {/* Mobile back button */}
+            {onBack && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onBack}
+                className="md:hidden mr-3 h-8 w-8 p-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
             <Input
               type="text"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Untitled Note"
-              className="text-2xl font-semibold border-none bg-transparent p-0 focus:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+              className="text-xl md:text-2xl font-semibold border-none bg-transparent p-0 focus:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -289,11 +302,11 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
         </div>
       </div>
 
-      {/* Rich Text Editor Toolbar */}
-      <div className="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-        <div className="flex items-center space-x-1">
-          {/* Formatting buttons */}
-          <div className="flex items-center space-x-1 mr-3">
+      {/* Rich Text Editor Toolbar - Simplified on mobile */}
+      <div className="px-4 md:px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        <div className="flex items-center justify-between">
+          {/* Essential formatting on mobile */}
+          <div className="flex items-center space-x-1">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Bold className="h-4 w-4" />
             </Button>
@@ -301,65 +314,62 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
               <Italic className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Underline className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Strikethrough className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <Separator orientation="vertical" className="h-6" />
-
-          {/* Alignment */}
-          <div className="flex items-center space-x-1 mx-3">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignCenter className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <Separator orientation="vertical" className="h-6" />
-
-          {/* Lists */}
-          <div className="flex items-center space-x-1 mx-3">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <List className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <ListOrdered className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <CheckSquare className="h-4 w-4" />
+              <Link className="h-4 w-4" />
             </Button>
           </div>
 
-          <Separator orientation="vertical" className="h-6" />
+          {/* Full toolbar on desktop */}
+          <div className="hidden md:flex items-center space-x-1">
+            <Separator orientation="vertical" className="h-6 mr-3" />
+            
+            {/* Alignment */}
+            <div className="flex items-center space-x-1 mr-3">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <AlignLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <AlignCenter className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <AlignRight className="h-4 w-4" />
+              </Button>
+            </div>
 
-          {/* Insert elements */}
-          <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Link className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Image className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Table className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Code className="h-4 w-4" />
-            </Button>
+            <Separator orientation="vertical" className="h-6" />
+
+            {/* Extended options */}
+            <div className="flex items-center space-x-1 ml-3">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Underline className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Strikethrough className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <ListOrdered className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <CheckSquare className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Image className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Table className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Code className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Content Editor */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 md:p-6">
         <Textarea
           ref={contentRef}
           value={content}
@@ -370,8 +380,8 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus }: NoteEditorPro
       </div>
 
       {/* Editor Footer with Tags */}
-      <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-        <div className="flex items-center justify-between">
+      <div className="px-4 md:px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center space-x-2 flex-1">
             <span className="text-sm text-slate-500 dark:text-slate-400">Tags:</span>
             <div className="flex items-center space-x-2 flex-wrap">
