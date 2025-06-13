@@ -70,7 +70,7 @@ export function SettingsModal({ isOpen, onClose, syncStatus }: SettingsModalProp
           <DialogTitle>Settings</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 max-h-[70vh] overflow-y-scroll">
           {/* Firebase Configuration */}
           <Card>
             <CardHeader className="pb-3">

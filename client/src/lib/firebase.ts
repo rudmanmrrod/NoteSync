@@ -87,7 +87,7 @@ export class FirebaseSync {
 
   async isAvailable(): Promise<boolean> {
     // Disable Firebase sync for offline mode
-    return false;
+    return hasFirebaseConfig;
   }
 
   async syncToFirebase(notes: LocalNote[]): Promise<boolean> {

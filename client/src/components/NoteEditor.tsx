@@ -2,25 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  Strikethrough,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  List,
-  ListOrdered,
-  CheckSquare,
-  Link,
-  Image,
-  Table,
-  Code,
-  Share,
   MoreHorizontal,
   Download,
   Upload,
@@ -29,9 +12,13 @@ import {
   CheckCircle,
   FileText,
   FileJson,
-  ArrowLeft
+  ArrowLeft,
+  Trash2,
+  Archive
 } from 'lucide-react';
 import type { LocalNote } from '@shared/schema';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface NoteEditorProps {
   note: LocalNote | null;
@@ -89,6 +76,26 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus, onBack }: NoteE
     }
     setNewTag('');
     setShowTagInput(false);
+  };
+
+  const handleArchiveNote = () => {
+    if (note) {
+      onUpdateNote(note.id, { 
+        isFavorite:false,
+        isDeleted: false,
+        isArchived: !note.isArchived 
+      });
+    }
+  };
+
+  const handleDeleteNote = () => {
+    if (note) {
+      onUpdateNote(note.id, {
+        isFavorite:false,
+        isArchived: false,
+        isDeleted: !note.isDeleted 
+      });
+    }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
@@ -286,9 +293,23 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus, onBack }: NoteE
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleArchiveNote}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archive
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDeleteNote}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -302,81 +323,10 @@ export function NoteEditor({ note, onUpdateNote, autoSaveStatus, onBack }: NoteE
         </div>
       </div>
 
-      {/* Rich Text Editor Toolbar - Simplified on mobile */}
-      <div className="px-4 md:px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-        <div className="flex items-center justify-between">
-          {/* Essential formatting on mobile */}
-          <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Bold className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Italic className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <List className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Link className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Full toolbar on desktop */}
-          <div className="hidden md:flex items-center space-x-1">
-            <Separator orientation="vertical" className="h-6 mr-3" />
-            
-            {/* Alignment */}
-            <div className="flex items-center space-x-1 mr-3">
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <AlignLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <AlignCenter className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <AlignRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            {/* Extended options */}
-            <div className="flex items-center space-x-1 ml-3">
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Underline className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Strikethrough className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <ListOrdered className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <CheckSquare className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Image className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Table className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Code className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Content Editor */}
       <div className="flex-1 p-4 md:p-6">
-        <Textarea
-          ref={contentRef}
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
-          placeholder="Start writing your note..."
-          className="min-h-full border-none bg-transparent resize-none focus:ring-0 shadow-none text-base leading-relaxed text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
-        />
+        <ReactQuill theme="snow" value={content} onChange={handleContentChange} />
       </div>
 
       {/* Editor Footer with Tags */}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,17 +30,22 @@ export function NotesList({
   onSortChange
 }: NotesListProps) {
   // Sort notes based on the selected criteria
-  const sortedNotes = [...notes].sort((a, b) => {
-    switch (sortBy) {
-      case 'title':
-        return a.title.localeCompare(b.title);
-      case 'created':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      case 'modified':
-      default:
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    }
-  });
+  const sortedNotes = useMemo(() => {
+    console.log(notes)
+    const sortedNotes = [...notes].sort((a, b) => {
+      switch (sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'created':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'modified':
+        default:
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      }
+    })
+    return sortedNotes
+  }, [sortBy, notes]);
+
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -104,9 +109,7 @@ export function NotesList({
               <SelectItem value="title">Title</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="ghost" size="sm">
-            <List className="h-4 w-4" />
-          </Button>
+          <List className="h-4 w-4" />
         </div>
       </div>
 
